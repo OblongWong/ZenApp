@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenApp - Login</title>
+    <style>
+        /* CSS Variables for Light and Dark Mode */
+        :root {
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --card-bg: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --input-border: #eeeeee;
+            --input-bg: #ffffff;
+        }
+
+        body.dark-mode {
+            --bg-gradient-start: #5a67d8;
+            --bg-gradient-end: #6b46c1;
+            --card-bg: #1e293b;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --input-border: #334155;
+            --input-bg: #0f172a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .container {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: var(--bg-gradient-start);
+            font-size: 28px;
+        }
+
+        .logo p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 3px solid var(--input-border);
+            color: var(--text-secondary);
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            border-bottom-color: var(--bg-gradient-start);
+            color: var(--bg-gradient-start);
+        }
+
+        .form-container {
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 16px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--bg-gradient-start);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .message.error {
+            background: #ffe6e6;
+            color: #cc0000;
+            display: block;
+        }
+
+        .message.success {
+            background: #e6ffe6;
+            color: #00cc00;
+            display: block;
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            z-index: 9999;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Sound Toggle Button */
+        .sound-toggle {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            z-index: 9999;
+        }
+
+        .sound-toggle:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo">
+        <h1>🧘 ZenApp</h1>
+        <p>Find your inner peace</p>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" onclick="showForm('login')">Login</div>
+        <div class="tab" onclick="showForm('register')">Register</div>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <!-- Login Form -->
+    <div id="loginForm" class="form-container active">
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="loginUsername" placeholder="Enter your username">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="loginPassword" placeholder="Enter your password">
+        </div>
+        <button class="btn" onclick="login()">Login</button>
+    </div>
+
+    <!-- Register Form -->
+    <div id="registerForm" class="form-container">
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="regFullName" placeholder="Enter your full name">
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="regEmail" placeholder="Enter your email">
+        </div>
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="regUsername" placeholder="Choose a username">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="regPassword" placeholder="Choose a password">
+        </div>
+        <button class="btn" onclick="register()">Create Account</button>
+    </div>
+</div>
+
+<!-- Dark Mode Toggle -->
+<button class="theme-toggle" id="themeToggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+    🌙
+</button>
+
+<!-- Sound Toggle -->
+<button class="sound-toggle" id="soundToggle" onclick="toggleSound()" title="Toggle Sound">
+    🔊
+</button>
+
+<script>
+    /* ========================================
+       SOUND SYSTEM
+       ======================================== */
+
+    // Sound Manager
+    const SoundManager = {
+        sounds: {},
+        enabled: true,
+
+        init() {
+            // Check if sounds are enabled in localStorage
+            const savedSoundState = localStorage.getItem('soundEnabled');
+            this.enabled = savedSoundState === null || savedSoundState === 'true';
+            this.updateSoundButton();
+
+            // Preload all sounds
+            this.sounds.startup = new Audio('sounds/Start_sound.mp3');
+            this.sounds.hover = new Audio('sounds/Button_hover_sound.mp3');
+            this.sounds.success = new Audio('sounds/Success_sound.mp3');
+
+            // Set volume levels
+            this.sounds.startup.volume = 0.5;
+            this.sounds.hover.volume = 0.3;
+            this.sounds.success.volume = 0.6;
+
+            // Play startup sound when page loads
+            if (this.enabled) {
+                setTimeout(() => this.play('startup'), 300);
+            }
+
+            // Add hover sound to all buttons
+            this.addHoverSounds();
+        },
+
+        play(soundName) {
+            if (!this.enabled) return;
+
+            const sound = this.sounds[soundName];
+            if (sound) {
+                sound.currentTime = 0; // Reset to start
+                sound.play().catch(err => console.log('Sound play failed:', err));
+            }
+        },
+
+        addHoverSounds() {
+            // Add hover event to all buttons, tabs, and clickable elements
+            document.querySelectorAll('.btn, .tab, button').forEach(element => {
+                element.addEventListener('mouseenter', () => {
+                    if (this.enabled) {
+                        this.play('hover');
+                    }
+                });
+            });
+        },
+
+        toggle() {
+            this.enabled = !this.enabled;
+            localStorage.setItem('soundEnabled', this.enabled);
+            this.updateSoundButton();
+        },
+
+        updateSoundButton() {
+            const btn = document.getElementById('soundToggle');
+            if (btn) {
+                btn.textContent = this.enabled ? '🔊' : '🔇';
+            }
+        }
+    };
+
+    // Initialize sound system when page loads
+    window.addEventListener('load', () => {
+        SoundManager.init();
+    });
+
+    // Toggle sound on/off
+    function toggleSound() {
+        SoundManager.toggle();
+    }
+
+    /* ========================================
+       DARK MODE FUNCTIONS
+       ======================================== */
+
+    function applyDarkMode() {
+        document.body.classList.add('dark-mode');
+        const toggleBtn = document.getElementById('themeToggle');
+        if (toggleBtn) {
+            toggleBtn.textContent = '☀️';
+        }
+    }
+
+    function removeDarkMode() {
+        document.body.classList.remove('dark-mode');
+        const toggleBtn = document.getElementById('themeToggle');
+        if (toggleBtn) {
+            toggleBtn.textContent = '🌙';
+        }
+    }
+
+    function toggleDarkMode() {
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        if (isDarkMode) {
+            removeDarkMode();
+            localStorage.setItem('darkMode', 'false');
+        } else {
+            applyDarkMode();
+            localStorage.setItem('darkMode', 'true');
+        }
+    }
+
+    function initializeDarkMode() {
+        const savedMode = localStorage.getItem('darkMode');
+        if (savedMode === 'true') {
+            applyDarkMode();
+        } else {
+            removeDarkMode();
+        }
+    }
+
+    initializeDarkMode();
+
+    /* ========================================
+       FORM FUNCTIONS
+       ======================================== */
+
+    // Show login or register form
+    function showForm(formType) {
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        event.target.classList.add('active');
+
+        document.getElementById('loginForm').classList.remove('active');
+        document.getElementById('registerForm').classList.remove('active');
+
+        if (formType === 'login') {
+            document.getElementById('loginForm').classList.add('active');
+        } else {
+            document.getElementById('registerForm').classList.add('active');
+        }
+
+        document.getElementById('message').className = 'message';
+    }
+
+    // Show message
+    function showMessage(text, type) {
+        const msg = document.getElementById('message');
+        msg.textContent = text;
+        msg.className = 'message ' + type;
+    }
+
+    // Login function
+    async function login() {
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+
+        if (!username || !password) {
+            showMessage('Please fill in all fields', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showMessage('Login successful! Redirecting...', 'success');
+                SoundManager.play('success'); // PLAY SUCCESS SOUND
+
+                // Store user info INCLUDING ROLE
+                localStorage.setItem('userId', data.userId);
+                localStorage.setItem('username', data.username);
+                localStorage.setItem('fullName', data.fullName);
+                localStorage.setItem('userRole', data.role);
+
+                // Redirect to home page
+                setTimeout(() => {
+                    window.location.href = '/home.html';
+                }, 1000);
+            } else {
+                showMessage(data.error || 'Login failed', 'error');
+            }
+        } catch (error) {
+            showMessage('Connection error. Please try again.', 'error');
+        }
+    }
+
+    // Register function
+    async function register() {
+        const fullName = document.getElementById('regFullName').value;
+        const email = document.getElementById('regEmail').value;
+        const username = document.getElementById('regUsername').value;
+        const password = document.getElementById('regPassword').value;
+
+        if (!fullName || !email || !username || !password) {
+            showMessage('Please fill in all fields', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/users/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ fullName, email, username, password })
+                });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showMessage('Account created! Please login.', 'success');
+                SoundManager.play('success'); // PLAY SUCCESS SOUND
+
+                // Switch to login form
+                setTimeout(() => {
+                    showForm('login');
+                    document.querySelector('.tab').click();
+                }, 1500);
+            } else {
+                showMessage(data.error || 'Registration failed', 'error');
+            }
+        } catch (error) {
+            showMessage('Connection error. Please try again.', 'error');
+        }
+    }
+
+    // Allow Enter key to submit
+    document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            if (document.getElementById('loginForm').classList.contains('active')) {
+                login();
+            } else {
+                register();
+            }
+        }
+    });
+</script>
+</body>
+</html>

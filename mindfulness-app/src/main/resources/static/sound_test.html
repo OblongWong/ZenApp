@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔊 Sound System Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 30px;
+            color: white;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 36px;
+        }
+
+        .status-box {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .status-value {
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .section {
+            background: white;
+            color: #333;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .section h2 {
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .test-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            margin: 15px 0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .test-card:hover {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        .course-card {
+            background: linear-gradient(135deg, #00aa00 0%, #00cc00 100%);
+            color: white;
+            padding: 30px;
+            margin: 15px 0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        .activity-card {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            color: white;
+            padding: 30px;
+            margin: 15px 0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        .console-output {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .console-line {
+            margin: 5px 0;
+        }
+
+        .success { color: #00ff00; }
+        .error { color: #ff5555; }
+        .info { color: #00ffff; }
+        .warning { color: #ffff00; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔊 Sound System Test & Debug Console</h1>
+
+        <div class="status-box">
+            <div class="status-item">
+                <span>Sound System Status:</span>
+                <span class="status-value" id="soundStatus">Loading...</span>
+            </div>
+            <div class="status-item">
+                <span>Elements Detected:</span>
+                <span class="status-value" id="elementCount">0</span>
+            </div>
+            <div class="status-item">
+                <span>Sounds Loaded:</span>
+                <span class="status-value" id="soundsLoaded">0/3</span>
+            </div>
+            <div class="status-item">
+                <span>Hover Events Added:</span>
+                <span class="status-value" id="hoverCount">0</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎮 Step 1: Direct Sound Tests</h2>
+            <p>Click these buttons to test if sounds load and play:</p>
+            <button onclick="testSound('startup')">🎵 Test Startup Sound</button>
+            <button onclick="testSound('hover')">🖱️ Test Hover Sound</button>
+            <button onclick="testSound('success')">✅ Test Success Sound</button>
+            <button onclick="toggleSoundSystem()">🔊/🔇 Toggle Sounds</button>
+        </div>
+
+        <div class="section">
+            <h2>🖱️ Step 2: Hover Tests</h2>
+            <p><strong>Hover your mouse over these cards</strong> - you should hear the hover sound:</p>
+
+            <div class="test-card">
+                <h3>Test Card #1</h3>
+                <p>Hover over this card to test hover sound detection</p>
+            </div>
+
+            <div class="course-card">
+                <h3>Course Card (like on home page)</h3>
+                <p>This simulates a course card - hover to test</p>
+            </div>
+
+            <div class="activity-card">
+                <h3>Activity Card (like on course page)</h3>
+                <p>This simulates an activity card - hover to test</p>
+            </div>
+
+            <button>Regular Button Hover Test</button>
+        </div>
+
+        <div class="section">
+            <h2>📊 Debug Console</h2>
+            <div class="console-output" id="consoleOutput">
+                <div class="console-line info">🚀 Waiting for page to load...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Custom console output
+        function logToConsole(message, type = 'info') {
+            const output = document.getElementById('consoleOutput');
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            line.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+            output.appendChild(line);
+            output.scrollTop = output.scrollHeight;
+
+            // Also log to real console
+            console.log(message);
+        }
+
+        // Sound Manager
+        const SoundManager = {
+            sounds: {},
+            enabled: true,
+            loadedCount: 0,
+
+            init() {
+                logToConsole('🔊 Initializing Sound Manager...', 'info');
+
+                // Check localStorage
+                const savedSoundState = localStorage.getItem('soundEnabled');
+                this.enabled = savedSoundState === null || savedSoundState === 'true';
+                logToConsole(`Sound enabled: ${this.enabled}`, 'info');
+
+                this.updateStatus();
+
+                // Preload all sounds
+                logToConsole('📥 Loading sound files...', 'info');
+
+                this.sounds.startup = new Audio('sounds/Start_sound.mp3');
+                this.sounds.hover = new Audio('sounds/Button_hover_sound.mp3');
+                this.sounds.success = new Audio('sounds/Success_sound.mp3');
+
+                // Set volume levels
+                this.sounds.startup.volume = 0.5;
+                this.sounds.hover.volume = 0.3;
+                this.sounds.success.volume = 0.6;
+
+                // Check if sounds loaded
+                Object.keys(this.sounds).forEach(key => {
+                    const sound = this.sounds[key];
+                    sound.addEventListener('canplaythrough', () => {
+                        this.loadedCount++;
+                        document.getElementById('soundsLoaded').textContent = `${this.loadedCount}/3`;
+                        logToConsole(`✅ Loaded: ${key}`, 'success');
+                    });
+                    sound.addEventListener('error', (e) => {
+                        logToConsole(`❌ Error loading ${key}: ${e.message || 'File not found'}`, 'error');
+                    });
+                });
+
+                // Add hover sounds
+                this.addHoverSounds();
+            },
+
+            play(soundName) {
+                if (!this.enabled) {
+                    logToConsole('🔇 Sounds are muted', 'warning');
+                    return;
+                }
+
+                const sound = this.sounds[soundName];
+                if (sound) {
+                    logToConsole(`🔊 Playing: ${soundName}`, 'success');
+                    sound.currentTime = 0;
+                    sound.play()
+                        .then(() => {
+                            logToConsole(`✅ ${soundName} played successfully`, 'success');
+                        })
+                        .catch(err => {
+                            logToConsole(`❌ Error playing ${soundName}: ${err.message}`, 'error');
+                        });
+                } else {
+                    logToConsole(`❌ Sound not found: ${soundName}`, 'error');
+                }
+            },
+
+            addHoverSounds() {
+                logToConsole('🖱️ Adding hover events...', 'info');
+
+                setTimeout(() => {
+                    const selectors = [
+                        'button',
+                        '.test-card',
+                        '.course-card',
+                        '.activity-card'
+                    ].join(', ');
+
+                    const elements = document.querySelectorAll(selectors);
+                    logToConsole(`📍 Found ${elements.length} elements for hover sounds`, 'info');
+
+                    document.getElementById('elementCount').textContent = elements.length;
+
+                    let hoverEventCount = 0;
+                    elements.forEach((element, index) => {
+                        element.addEventListener('mouseenter', () => {
+                            logToConsole(`🖱️ Mouse entered: ${element.className || element.tagName}`, 'info');
+                            if (this.enabled) {
+                                this.play('hover');
+                            }
+                        });
+                        hoverEventCount++;
+                    });
+
+                    document.getElementById('hoverCount').textContent = hoverEventCount;
+                    logToConsole(`✅ Added ${hoverEventCount} hover event listeners`, 'success');
+                }, 500);
+            },
+
+            updateStatus() {
+                const status = this.enabled ? '🔊 ENABLED' : '🔇 MUTED';
+                document.getElementById('soundStatus').textContent = status;
+            },
+
+            toggle() {
+                this.enabled = !this.enabled;
+                localStorage.setItem('soundEnabled', this.enabled);
+                this.updateStatus();
+                logToConsole(`Sound toggled: ${this.enabled ? 'ENABLED' : 'MUTED'}`, 'warning');
+            }
+        };
+
+        // Test function
+        function testSound(soundName) {
+            logToConsole(`🎮 Testing sound: ${soundName}`, 'info');
+            SoundManager.play(soundName);
+        }
+
+        function toggleSoundSystem() {
+            SoundManager.toggle();
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', () => {
+            logToConsole('🚀 Page loaded!', 'success');
+            logToConsole('🎬 Starting Sound Manager initialization...', 'info');
+            SoundManager.init();
+        });
+
+        // Log any JavaScript errors
+        window.addEventListener('error', (e) => {
+            logToConsole(`❌ JavaScript Error: ${e.message}`, 'error');
+        });
+    </script>
+</body>
+</html>

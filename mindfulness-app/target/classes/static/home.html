@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenApp - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* CSS Variables for Light and Dark Mode */
+        :root {
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-muted: #888888;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --shadow-hover: rgba(0, 0, 0, 0.1);
+            --card-hover-shadow: rgba(102, 126, 234, 0.3);
+            --badge-gold: #ffd700;
+            --badge-text: #333;
+        }
+
+        body.dark-mode {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-gradient-start: #5a67d8;
+            --bg-gradient-end: #6b46c1;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --text-muted: #888888;
+            --card-bg: #16213e;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --shadow-hover: rgba(0, 0, 0, 0.5);
+            --card-hover-shadow: rgba(102, 126, 234, 0.4);
+            --badge-gold: #ffc107;
+            --badge-text: #1a1a2e;
+        }
+
+        body {
+            background: var(--bg-primary);
+            min-height: 100vh;
+        }
+
+        /* Animated Background */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background: linear-gradient(-45deg, #f5f7fa, #e8ecf1, #f0f4f8, #e6eaf0);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        body.dark-mode .background-animation {
+            background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f172a, #1e293b);
+            background-size: 400% 400%;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating Icons */
+        .floating-icon {
+            position: absolute;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            25% { transform: translate(30px, -50px) rotate(10deg) scale(1.1); }
+            50% { transform: translate(-20px, -100px) rotate(-10deg) scale(0.9); }
+            75% { transform: translate(40px, -50px) rotate(15deg) scale(1.05); }
+            100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+        }
+
+        @keyframes floatAlt {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            33% { transform: translate(-40px, -60px) rotate(-12deg) scale(1.08); }
+            66% { transform: translate(30px, -120px) rotate(12deg) scale(0.92); }
+            100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+        }
+
+        .floating-icon:nth-child(1) { top: 8%; left: 12%; font-size: 35px; animation: float 12s infinite ease-in-out 0s; }
+        .floating-icon:nth-child(2) { top: 15%; left: 78%; font-size: 28px; animation: floatAlt 14s infinite ease-in-out 2s; }
+        .floating-icon:nth-child(3) { top: 55%; left: 8%; font-size: 32px; animation: float 11s infinite ease-in-out 4s; }
+        .floating-icon:nth-child(4) { top: 68%; left: 82%; font-size: 25px; animation: floatAlt 13s infinite ease-in-out 6s; }
+        .floating-icon:nth-child(5) { top: 35%; left: 45%; font-size: 30px; animation: float 15s infinite ease-in-out 1s; }
+        .floating-icon:nth-child(6) { top: 82%; left: 25%; font-size: 27px; animation: floatAlt 12s infinite ease-in-out 3s; }
+        .floating-icon:nth-child(7) { top: 22%; left: 35%; font-size: 20px; animation: float 16s infinite ease-in-out 5s; }
+        .floating-icon:nth-child(8) { top: 48%; left: 88%; font-size: 24px; animation: floatAlt 10s infinite ease-in-out 7s; }
+        .floating-icon:nth-child(9) { top: 75%; left: 55%; font-size: 22px; animation: float 14s infinite ease-in-out 8s; }
+        .floating-icon:nth-child(10) { top: 92%; left: 70%; font-size: 26px; animation: floatAlt 13s infinite ease-in-out 4s; }
+
+        /* Navigation */
+        .navbar {
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            color: white;
+            font-size: 24px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Admin link - hidden by default */
+        .nav-links a.admin-link {
+            display: none;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .user-info {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .points-badge {
+            background: var(--badge-gold);
+            color: var(--badge-text);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .welcome-section {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+
+        .welcome-section h2 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .welcome-section p {
+            color: var(--text-secondary);
+        }
+
+        /* Course Grid */
+        .section-title {
+            font-size: 24px;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .course-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px var(--shadow-color);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .course-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px var(--card-hover-shadow);
+        }
+
+        .course-image {
+            height: 150px;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+        }
+
+        .course-content {
+            padding: 20px;
+        }
+
+        .course-content h3 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .course-content p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .difficulty {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .difficulty.BEGINNER {
+            background: #e6ffe6;
+            color: #00aa00;
+        }
+
+        .difficulty.INTERMEDIATE {
+            background: #fff3e6;
+            color: #ff8800;
+        }
+
+        .difficulty.ADVANCED {
+            background: #ffe6e6;
+            color: #cc0000;
+        }
+
+        .points {
+            color: var(--bg-gradient-start);
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-secondary);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            transition: transform 0.3s ease;
+            z-index: 9999;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Sound Toggle Button */
+        .sound-toggle {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            z-index: 9999;
+            transition: transform 0.3s;
+        }
+
+        .sound-toggle:hover {
+            transform: scale(1.1);
+        }
+
+    </style>
+    <!-- Animation System -->
+    <link rel="stylesheet" href="animations.css">
+</head>
+<body>
+<div class="background-animation"></div>
+<div class="floating-icon">🧘</div>
+<div class="floating-icon">🌸</div>
+<div class="floating-icon">🍃</div>
+<div class="floating-icon">☮️</div>
+<div class="floating-icon">🕉️</div>
+<div class="floating-icon">🌿</div>
+<div class="floating-icon">🪷</div>
+<div class="floating-icon">☁️</div>
+<div class="floating-icon">⭐</div>
+<div class="floating-icon">💫</div>
+
+<nav class="navbar">
+    <h1>🧘 ZenApp</h1>
+    <div class="nav-links">
+        <a href="/home.html">Home</a>
+        <a href="/profile.html">Profile</a>
+        <a href="/settings.html">Settings</a>
+        <!-- Admin link - shown only for admins -->
+        <a href="/admin.html" class="admin-link" id="adminLink">🛠️ Admin</a>
+        <div class="user-info">
+            <span id="userName">User</span>
+            <span class="points-badge" id="userPoints">0 pts</span>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<div class="container fade-in">
+    <div class="welcome-section">
+        <h2>Welcome back, <span id="welcomeName">User</span>! 👋</h2>
+        <p>Continue your mindfulness journey. Choose a course below to get started.</p>
+    </div>
+
+    <h2 class="section-title">Available Courses</h2>
+    <div class="courses-grid" id="coursesGrid">
+        <div class="loading">Loading courses...</div>
+    </div>
+</div>
+
+<!-- Dark Mode Toggle -->
+<button class="theme-toggle" id="themeToggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+    🌙
+</button>
+
+
+<!-- Sound Toggle -->
+<button class="sound-toggle" id="soundToggle" onclick="toggleSound()" title="Toggle Sound">
+    🔊
+</button>
+
+
+<script>
+    /* ========================================
+       SOUND SYSTEM
+       ======================================== */
+
+    // Sound Manager
+    const SoundManager = {
+        sounds: {},
+        enabled: true,
+
+        init() {
+            // Check if sounds are enabled in localStorage
+            const savedSoundState = localStorage.getItem('soundEnabled');
+            this.enabled = savedSoundState === null || savedSoundState === 'true';
+            this.updateSoundButton();
+
+            // Preload all sounds
+            this.sounds.startup = new Audio('sounds/Start_sound.mp3');
+            this.sounds.hover = new Audio('sounds/Button_hover_sound.mp3');
+            this.sounds.success = new Audio('sounds/Success_sound.mp3');
+
+            // Set volume levels
+            this.sounds.startup.volume = 0.5;
+            this.sounds.hover.volume = 0.3;
+            this.sounds.success.volume = 0.6;
+
+            // Startup sound disabled - only plays on login page
+            // if (this.enabled) {
+            //     setTimeout(() => this.play('startup'), 300);
+            // }
+
+            // Add hover sound to all buttons
+            this.addHoverSounds();
+        },
+
+        play(soundName) {
+            if (!this.enabled) return;
+
+            const sound = this.sounds[soundName];
+            if (sound) {
+                sound.currentTime = 0; // Reset to start
+                sound.play().catch(err => console.log('Sound play failed:', err));
+            }
+        },
+
+        addHoverSounds() {
+            // Wait for DOM to be fully loaded before adding listeners
+            setTimeout(() => {
+                // Select all interactive elements
+                const selectors = [
+                    'button',
+                    '.btn',
+                    '.tab',
+                    '.course-card',
+                    '.activity-card',
+                    '.badge-card',
+                    '.nav-links a',
+                    '.logout-btn',
+                    '.admin-link',
+                    '.edit-btn',
+                    '.delete-btn',
+                    '.complete-btn',
+                    '.status-badge',
+                    'a[href]'
+                ].join(', ');
+
+                const elements = document.querySelectorAll(selectors);
+                console.log(`🔊 Sound: Adding hover to ${elements.length} elements`);
+
+                elements.forEach((element, index) => {
+                    element.addEventListener('mouseenter', () => {
+                        if (this.enabled) {
+                            this.play('hover');
+                        }
+                    });
+                });
+            }, 500); // Wait 500ms for DOM elements to load
+        },
+
+        toggle() {
+            this.enabled = !this.enabled;
+            localStorage.setItem('soundEnabled', this.enabled);
+            this.updateSoundButton();
+        },
+
+        updateSoundButton() {
+            const btn = document.getElementById('soundToggle');
+            if (btn) {
+                btn.textContent = this.enabled ? '🔊' : '🔇';
+            }
+        }
+    };
+
+    // Initialize sound system when page loads
+    window.addEventListener('load', () => {
+        SoundManager.init();
+    });
+
+    // Toggle sound on/off
+    function toggleSound() {
+        SoundManager.toggle();
+    }
+
+    /* ========================================
+       END SOUND SYSTEM
+       ======================================== */
+
+
+    /* ==================== DARK MODE ==================== */
+
+    function applyDarkMode() {
+        document.body.classList.add('dark-mode');
+        const toggleBtn = document.getElementById('themeToggle');
+        if (toggleBtn) {
+            toggleBtn.textContent = '☀️';
+        }
+    }
+
+    function removeDarkMode() {
+        document.body.classList.remove('dark-mode');
+        const toggleBtn = document.getElementById('themeToggle');
+        if (toggleBtn) {
+            toggleBtn.textContent = '🌙';
+        }
+    }
+
+    function toggleDarkMode() {
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        if (isDarkMode) {
+            removeDarkMode();
+            localStorage.setItem('darkMode', 'false');
+        } else {
+            applyDarkMode();
+            localStorage.setItem('darkMode', 'true');
+        }
+    }
+
+    function initializeDarkMode() {
+        const savedMode = localStorage.getItem('darkMode');
+        if (savedMode === 'true') {
+            applyDarkMode();
+        } else {
+            removeDarkMode();
+        }
+    }
+
+    initializeDarkMode();
+
+    /* ==================== AUTH & ADMIN CHECK ==================== */
+
+    // Check if user is logged in
+    const userId = localStorage.getItem('userId');
+    const username = localStorage.getItem('username');
+    const fullName = localStorage.getItem('fullName');
+    const userRole = localStorage.getItem('userRole');
+
+    if (!userId) {
+        window.location.href = '/login.html';
+    }
+
+    // Show admin link ONLY if user is admin
+    function checkAdminAccess() {
+        const adminLink = document.getElementById('adminLink');
+        if (userRole === 'ADMIN') {
+            adminLink.style.display = 'block';
+        } else {
+            adminLink.style.display = 'none';
+        }
+    }
+
+    // Call on page load
+    checkAdminAccess();
+
+    /* ==================== USER INFO ==================== */
+
+    // Set user info
+    document.getElementById('userName').textContent = username || 'User';
+    document.getElementById('welcomeName').textContent = fullName || username || 'User';
+
+    // Load user points
+    async function loadUserPoints() {
+        try {
+            const response = await fetch(`/api/users/${userId}/points`);
+            const data = await response.json();
+            document.getElementById('userPoints').textContent = data.totalPoints + ' pts';
+        } catch (error) {
+            console.error('Error loading points:', error);
+        }
+    }
+
+    /* ==================== COURSES ==================== */
+
+    // Load courses
+    async function loadCourses() {
+        try {
+            const response = await fetch('/api/courses');
+            const courses = await response.json();
+
+            const grid = document.getElementById('coursesGrid');
+            grid.innerHTML = '';
+
+            const icons = ['🧘', '😌', '🌬️', '☀️', '🌿', '💆'];
+
+            courses.forEach((course, index) => {
+                const card = document.createElement('div');
+                card.className = 'course-card';
+                card.onclick = () => viewCourse(course.courseId);
+
+                card.innerHTML = `
+                    <div class="course-image">${icons[index % icons.length]}</div>
+                    <div class="course-content">
+                        <h3>${course.courseName}</h3>
+                        <p>${course.description || 'Start your mindfulness journey with this course.'}</p>
+                        <div class="course-meta">
+                            <span class="difficulty ${course.difficultyLevel}">${course.difficultyLevel}</span>
+                            <span class="points">⭐ ${course.pointsReward} pts</span>
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        } catch (error) {
+            console.error('Error loading courses:', error);
+            document.getElementById('coursesGrid').innerHTML = '<p>Error loading courses.</p>';
+        }
+    }
+
+    // View course details
+    function viewCourse(courseId) {
+        window.location.href = `/course.html?id=${courseId}`;
+    }
+
+    // Logout
+    function logout() {
+        localStorage.removeItem('userId');
+        localStorage.removeItem('username');
+        localStorage.removeItem('fullName');
+        localStorage.removeItem('userRole');
+        window.location.href = '/login.html';
+    }
+
+    // Load data on page load
+    loadUserPoints();
+    loadCourses();
+</script>
+<!-- Animation System -->
+<script src="animations.js"></script>
+</body>
+</html>

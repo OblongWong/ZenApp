@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenApp - Profile</title>
+    <style>
+        /* CSS Variables for Light and Dark Mode */
+        :root {
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-muted: #888888;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --border-color: #eeeeee;
+            --badge-bg: #f8f9fa;
+            --badge-earned-bg: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+            --badge-border: #667eea;
+            --stat-value-color: #667eea;
+            --modal-overlay: rgba(0, 0, 0, 0.7);
+            --modal-bg: #ffffff;
+        }
+
+        body.dark-mode {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-gradient-start: #5a67d8;
+            --bg-gradient-end: #6b46c1;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --text-muted: #888888;
+            --card-bg: #16213e;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --border-color: #2d2d44;
+            --badge-bg: #0f172a;
+            --badge-earned-bg: linear-gradient(135deg, #667eea30 0%, #764ba230 100%);
+            --badge-border: #667eea;
+            --stat-value-color: #8b9cee;
+            --modal-overlay: rgba(0, 0, 0, 0.85);
+            --modal-bg: #16213e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg-primary);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            color: white;
+            font-size: 24px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Admin link - hidden by default */
+        .nav-links a.admin-link {
+            display: none;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            border-radius: 20px;
+            padding: 40px;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .profile-avatar-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            margin: 0 auto;
+        }
+
+        /* Edit Icon Button */
+        .edit-icon-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            border: 3px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .edit-icon-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .profile-header h2 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .profile-header p {
+            opacity: 0.9;
+        }
+
+        /* Icon Picker Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-overlay);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .icon-picker-modal {
+            background: var(--modal-bg);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h2 {
+            color: var(--text-primary);
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .modal-header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Icon Grid */
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .icon-option {
+            width: 100%;
+            aspect-ratio: 1;
+            background: var(--badge-bg);
+            border: 3px solid transparent;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon-option:hover {
+            transform: scale(1.1);
+            border-color: var(--bg-gradient-start);
+            background: var(--badge-earned-bg);
+        }
+
+        .icon-option.selected {
+            border-color: var(--bg-gradient-start);
+            background: var(--badge-earned-bg);
+            transform: scale(1.05);
+        }
+
+        /* Modal Buttons */
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn.cancel {
+            background: var(--badge-bg);
+            color: var(--text-primary);
+        }
+
+        .modal-btn.cancel:hover {
+            background: var(--border-color);
+        }
+
+        .modal-btn.save {
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: white;
+        }
+
+        .modal-btn.save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .modal-btn.save:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Message notification */
+        .message {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            display: none;
+            z-index: 10001;
+            animation: slideInRight 0.3s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .message.success {
+            background: #00aa00;
+            display: block;
+        }
+
+        .message.error {
+            background: #cc0000;
+            display: block;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+
+        .stat-card .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--stat-value-color);
+        }
+
+        .stat-card .label {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* Section */
+        .section {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+
+        .section h3 {
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        /* Badges Grid */
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .badge-card {
+            background: var(--badge-bg);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .badge-card:hover {
+            transform: scale(1.05);
+        }
+
+        .badge-card.earned {
+            background: var(--badge-earned-bg);
+            border: 2px solid var(--badge-border);
+        }
+
+        .badge-card.locked {
+            opacity: 0.5;
+        }
+
+        .badge-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .badge-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .badge-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        /* Activity List */
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-info h4 {
+            color: var(--text-primary);
+            margin-bottom: 3px;
+        }
+
+        .activity-info p {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .activity-points {
+            color: #00aa00;
+            font-weight: bold;
+        }
+
+        .no-data {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+        }
+
+        /* Dark Mode Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            min-width: 60px;
+            min-height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            z-index: 9999;
+            margin: 0;
+            padding: 0;
+            transform: translate(0, 0);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        /* Sound Toggle Button */
+        .sound-toggle {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            z-index: 9999;
+            transition: transform 0.3s;
+        }
+
+        .sound-toggle:hover {
+            transform: scale(1.1);
+        }
+
+    </style>
+    <!-- Animation System -->
+    <link rel="stylesheet" href="animations.css">
+</head>
+<body>
+<nav class="navbar">
+    <h1>🧘 ZenApp</h1>
+    <div class="nav-links">
+        <a href="/home.html">Home</a>
+        <a href="/profile.html">Profile</a>
+        <a href="/settings.html">Settings</a>
+        <!-- Admin link - shown only for admins -->
+        <a href="/admin.html" class="admin-link" id="adminLink">🛠️ Admin</a>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<!-- Success/Error Message -->
+<div id="message" class="message"></div>
+
+<div class="container">
+    <div class="profile-header">
+        <div class="profile-avatar-container">
+            <div class="profile-avatar" id="profileAvatar">🧘</div>
+            <button class="edit-icon-btn" onclick="openIconPicker()" title="Edit Profile Icon">✏️</button>
+        </div>
+        <h2 id="profileName">Loading...</h2>
+        <p id="profileEmail">Loading...</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="icon">⭐</div>
+            <div class="value" id="totalPoints">0</div>
+            <div class="label">Total Points</div>
+        </div>
+        <div class="stat-card">
+            <div class="icon">✅</div>
+            <div class="value" id="completedActivities">0</div>
+            <div class="label">Activities Completed</div>
+        </div>
+        <div class="stat-card">
+            <div class="icon">🏆</div>
+            <div class="value" id="badgesEarned">0</div>
+            <div class="label">Badges Earned</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%); color: white;">
+            <div class="icon">🔥</div>
+            <div class="value" style="color: white;" id="currentStreak">0</div>
+            <div class="label" style="color: rgba(255,255,255,0.9);">Day Streak</div>
+            <div style="font-size: 12px; margin-top: 8px; opacity: 0.9;" id="streakInfo">Loading...</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>🏅 Your Badges</h3>
+        <div class="badges-grid" id="badgesGrid">
+            <div class="loading">Loading badges...</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>📝 Recent Activity</h3>
+        <ul class="activity-list" id="activityList">
+            <li class="loading">Loading activities...</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Icon Picker Modal -->
+<div class="modal-overlay" id="iconPickerModal" onclick="closeIconPicker()">
+    <div class="icon-picker-modal" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Choose Your Profile Icon</h2>
+            <p>Select an icon that represents you</p>
+        </div>
+
+        <div class="icon-grid" id="iconGrid">
+            <!-- Icons will be dynamically added here -->
+        </div>
+
+        <div class="modal-buttons">
+            <button class="modal-btn cancel" onclick="closeIconPicker()">Cancel</button>
+            <button class="modal-btn save" id="saveIconBtn" onclick="saveProfileIcon()">Save Icon</button>
+        </div>
+    </div>
+</div>
+
+<!-- Dark Mode Toggle Button -->
+<button class="theme-toggle" id="themeToggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+    🌙
+</button>
+
+
+<!-- Sound Toggle -->
+<button class="sound-toggle" id="soundToggle" onclick="toggleSound()" title="Toggle Sound">
+    🔊
+</button>
+
+
+<script>
+    /* ========================================
+       SOUND SYSTEM
+       ======================================== */
+
+    // Sound Manager
+    const SoundManager = {
+        sounds: {},
+        enabled: true,
+
+        init() {
+            // Check if sounds are enabled in localStorage
+            const savedSoundState = localStorage.getItem('soundEnabled');
+            this.enabled = savedSoundState === null || savedSoundState === 'true';
+            this.updateSoundButton();
+
+            // Preload all sounds
+            this.sounds.startup = new Audio('sounds/Start_sound.mp3');
+            this.sounds.hover = new Audio('sounds/Button_hover_sound.mp3');
+            this.sounds.success = new Audio('sounds/Success_sound.mp3');
+
+            // Set volume levels
+            this.sounds.startup.volume = 0.5;
+            this.sounds.hover.volume = 0.3;
+            this.sounds.success.volume = 0.6;
+
+            // Startup sound disabled - only plays on login page
+            // if (this.enabled) {
+            //     setTimeout(() => this.play('startup'), 300);
+            // }
+
+            // Add hover sound to all buttons
+            this.addHoverSounds();
+        },
+
+        play(soundName) {
+            if (!this.enabled) return;
+
+            const sound = this.sounds[soundName];
+            if (sound) {
+                sound.currentTime = 0; // Reset to start
+                sound.play().catch(err => console.log('Sound play failed:', err));
+            }
+        },
+
+        addHoverSounds() {
+            // Wait for DOM to be fully loaded before adding listeners
+            setTimeout(() => {
+                // Select all interactive elements
+                const selectors = [
+                    'button',
+                    '.btn',
+                    '.tab',
+                    '.course-card',
+                    '.activity-card',
+                    '.badge-card',
+                    '.nav-links a',
+                    '.logout-btn',
+                    '.admin-link',
+                    '.edit-btn',
+                    '.delete-btn',
+                    '.complete-btn',
+                    '.status-badge',
+                    'a[href]'
+                ].join(', ');
+
+                const elements = document.querySelectorAll(selectors);
+                console.log(`🔊 Sound: Adding hover to ${elements.length} elements`);
+
+                elements.forEach((element, index) => {
+                    element.addEventListener('mouseenter', () => {
+                        if (this.enabled) {
+                            this.play('hover');
+                        }
+                    });
+                });
+            }, 500); // Wait 500ms for DOM elements to load
+        },
+
+        toggle() {
+            this.enabled = !this.enabled;
+            localStorage.setItem('soundEnabled', this.enabled);
+            this.updateSoundButton();
+        },
+
+        updateSoundButton() {
+            const btn = document.getElementById('soundToggle');
+            if (btn) {
+                btn.textContent = this.enabled ? '🔊' : '🔇';
+            }
+        }
+    };
+
+    // Initialize sound system when page loads
+    window.addEventListener('load', () => {
+        SoundManager.init();
+    });
+
+    // Toggle sound on/off
+    function toggleSound() {
+        SoundManager.toggle();
+    }
+
+    /* ========================================
+       END SOUND SYSTEM
+       ======================================== */
+
+
+    /* ==================== DARK MODE FUNCTIONS ==================== */
+
+    function applyDarkMode() {
+        document.body.classList.add('dark-mode');
+        const toggleBtn = document.getElementById('themeToggle');
+        if (toggleBtn) {
+            toggleBtn.textContent = '☀️';
+        }
+    }
+
+    function removeDarkMode() {
+        document.body.classList.remove('dark-mode');
+        const toggleBtn = document.getElementById('themeToggle');
+        if (toggleBtn) {
+            toggleBtn.textContent = '🌙';
+        }
+    }
+
+    function toggleDarkMode() {
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        if (isDarkMode) {
+            removeDarkMode();
+            localStorage.setItem('darkMode', 'false');
+        } else {
+            applyDarkMode();
+            localStorage.setItem('darkMode', 'true');
+        }
+    }
+
+    function initializeDarkMode() {
+        const savedMode = localStorage.getItem('darkMode');
+        if (savedMode === 'true') {
+            applyDarkMode();
+        } else {
+            removeDarkMode();
+        }
+    }
+
+    initializeDarkMode();
+
+    /* ==================== ICON PICKER FUNCTIONS ==================== */
+
+    // Available profile icons
+    const availableIcons = [
+        '🧘‍♂️', '🧘‍♀️', '🧘', '🌸',
+        '🌿', '🍃', '🪷', '☮️',
+        '🕉️', '⭐', '💫', '🌙',
+        '☀️', '🦋', '🐚', '🌊'
+    ];
+
+    let selectedIcon = null;
+    let currentUserIcon = '🧘';
+
+    // Open the icon picker modal
+    function openIconPicker() {
+        const modal = document.getElementById('iconPickerModal');
+        const iconGrid = document.getElementById('iconGrid');
+
+        iconGrid.innerHTML = '';
+        currentUserIcon = document.getElementById('profileAvatar').textContent;
+        selectedIcon = currentUserIcon;
+
+        availableIcons.forEach(icon => {
+            const iconOption = document.createElement('div');
+            iconOption.className = 'icon-option';
+            iconOption.textContent = icon;
+
+            if (icon === currentUserIcon) {
+                iconOption.classList.add('selected');
+            }
+
+            iconOption.onclick = () => selectIcon(icon);
+            iconGrid.appendChild(iconOption);
+        });
+
+        modal.classList.add('active');
+    }
+
+    function closeIconPicker() {
+        document.getElementById('iconPickerModal').classList.remove('active');
+        selectedIcon = null;
+    }
+
+    function selectIcon(icon) {
+        document.querySelectorAll('.icon-option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+
+        event.target.classList.add('selected');
+        selectedIcon = icon;
+    }
+
+    async function saveProfileIcon() {
+        if (!selectedIcon) {
+            showMessage('Please select an icon first!', 'error');
+            return;
+        }
+
+        const userId = localStorage.getItem('userId');
+
+        try {
+            const saveBtn = document.getElementById('saveIconBtn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+
+            const response = await fetch(`/api/users/${userId}/profile-icon`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    profileIcon: selectedIcon
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                SoundManager.play('success');
+                document.getElementById('profileAvatar').textContent = selectedIcon;
+                closeIconPicker();
+                showMessage('✨ Profile icon updated!', 'success');
+            } else {
+                showMessage(data.error || 'Error updating icon', 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showMessage('Connection error. Please try again.', 'error');
+        } finally {
+            const saveBtn = document.getElementById('saveIconBtn');
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save Icon';
+        }
+    }
+
+    function showMessage(text, type) {
+        const msg = document.getElementById('message');
+        msg.textContent = text;
+        msg.className = 'message ' + type;
+
+        setTimeout(() => {
+            msg.className = 'message';
+        }, 3000);
+    }
+
+    /* ==================== USER DATA FUNCTIONS ==================== */
+
+    const userId = localStorage.getItem('userId');
+    const username = localStorage.getItem('username');
+    const fullName = localStorage.getItem('fullName');
+    const userRole = localStorage.getItem('userRole');
+
+    if (!userId) {
+        window.location.href = '/login.html';
+    }
+
+    // Show admin link ONLY if user is admin
+    function checkAdminAccess() {
+        const adminLink = document.getElementById('adminLink');
+        if (userRole === 'ADMIN') {
+            adminLink.style.display = 'block';
+        } else {
+            adminLink.style.display = 'none';
+        }
+    }
+
+    checkAdminAccess();
+
+    // Load user profile
+    async function loadProfile() {
+        try {
+            const response = await fetch(`/api/users/${userId}`);
+            const user = await response.json();
+
+            document.getElementById('profileName').textContent = user.fullName || user.username;
+            document.getElementById('profileEmail').textContent = user.email;
+            document.getElementById('totalPoints').textContent = user.totalPoints || 0;
+
+            if (user.profileIcon) {
+                document.getElementById('profileAvatar').textContent = user.profileIcon;
+            }
+        } catch (error) {
+            console.error('Error loading profile:', error);
+        }
+    }
+
+    // Load completed activities
+    async function loadCompletedActivities() {
+        try {
+            const response = await fetch(`/api/activities/user/${userId}`);
+            const completions = await response.json();
+
+            document.getElementById('completedActivities').textContent = completions.length;
+
+            const list = document.getElementById('activityList');
+
+            if (completions.length === 0) {
+                list.innerHTML = '<li class="no-data">No activities completed yet. Start a course!</li>';
+                return;
+            }
+
+            list.innerHTML = '';
+            const recent = completions.slice(-5).reverse();
+
+            recent.forEach(completion => {
+                const li = document.createElement('li');
+                li.className = 'activity-item';
+
+                const date = new Date(completion.completedAt);
+                const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                li.innerHTML = `
+                    <div class="activity-info">
+                        <h4>${completion.activity?.activityName || 'Activity'}</h4>
+                        <p>${dateStr}</p>
+                    </div>
+                    <span class="activity-points">+${completion.pointsEarned} pts</span>
+                `;
+                list.appendChild(li);
+            });
+        } catch (error) {
+            console.error('Error loading activities:', error);
+        }
+    }
+
+    // Load badges
+    async function loadBadges() {
+        try {
+            const userBadgesRes = await fetch(`/api/users/${userId}/badges`);
+            const userBadges = await userBadgesRes.json();
+
+            document.getElementById('badgesEarned').textContent = userBadges.length;
+
+            const grid = document.getElementById('badgesGrid');
+
+            const badgeIcons = {
+                'First Step': '🎯',
+                'Consistent Practitioner': '🔥',
+                'Century Club': '💯',
+                'Course Master': '🎓',
+                'Dedicated Meditator': '🧘'
+            };
+
+            const allBadges = [
+                { name: 'First Step', desc: 'Complete your first activity', requirement: 1 },
+                { name: 'Consistent Practitioner', desc: 'Maintain a 7-day streak', requirement: 7 },
+                { name: 'Century Club', desc: 'Earn 100 total points', requirement: 100 },
+                { name: 'Course Master', desc: 'Complete 5 courses', requirement: 5 },
+                { name: 'Dedicated Meditator', desc: 'Complete 30 activities', requirement: 30 }
+            ];
+
+            grid.innerHTML = '';
+
+            allBadges.forEach(badge => {
+                const earned = userBadges.some(ub =>
+                    ub.badge?.badgeName === badge.name
+                );
+
+                const card = document.createElement('div');
+                card.className = `badge-card ${earned ? 'earned' : 'locked'}`;
+                card.innerHTML = `
+                    <div class="badge-icon">${earned ? badgeIcons[badge.name] || '🏅' : '🔒'}</div>
+                    <div class="badge-name">${badge.name}</div>
+                    <div class="badge-desc">${badge.desc}</div>
+                `;
+                grid.appendChild(card);
+            });
+
+        } catch (error) {
+            console.error('Error loading badges:', error);
+        }
+    }
+
+    // Load user streak
+    async function loadStreak() {
+        try {
+            const response = await fetch(`/api/streaks/user/${userId}`);
+            const data = await response.json();
+
+            document.getElementById('currentStreak').textContent = data.currentStreak || 0;
+
+            const streakInfo = document.getElementById('streakInfo');
+            if (data.hasActivityToday) {
+                streakInfo.textContent = '✓ Active today!';
+            } else {
+                streakInfo.textContent = 'Complete an activity!';
+            }
+        } catch (error) {
+            console.error('Error loading streak:', error);
+            document.getElementById('streakInfo').textContent = 'Start your streak!';
+        }
+    }
+
+    // Logout
+    function logout() {
+        localStorage.removeItem('userId');
+        localStorage.removeItem('username');
+        localStorage.removeItem('fullName');
+        localStorage.removeItem('userRole');
+        window.location.href = '/login.html';
+    }
+
+    // Load all data on page load
+    loadProfile();
+    loadStreak();
+    loadCompletedActivities();
+    loadBadges();
+</script>
+<!-- Animation System -->
+<script src="animations.js"></script>
+</body>
+</html>

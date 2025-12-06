@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenApp - Course</title>
+    <style>
+        /* CSS Variables for Light and Dark Mode */
+        :root {
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-muted: #888888;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --modal-bg: #ffffff;
+            --modal-overlay-bg: rgba(0, 0, 0, 0.7);
+            --timer-bg: #f8f9fa;
+            --timer-text: #667eea;
+            --close-btn-bg: #eeeeee;
+            --close-btn-text: #333333;
+            --border-color: #eeeeee;
+            --badge-gold: #ffd700;
+            --badge-text: #333333;
+            --link-color: #667eea;
+        }
+
+        body.dark-mode {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-gradient-start: #5a67d8;
+            --bg-gradient-end: #6b46c1;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --text-muted: #888888;
+            --card-bg: #16213e;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --modal-bg: #16213e;
+            --modal-overlay-bg: rgba(0, 0, 0, 0.85);
+            --timer-bg: #0f172a;
+            --timer-text: #667eea;
+            --close-btn-bg: #0f172a;
+            --close-btn-text: #e0e0e0;
+            --border-color: #2d2d44;
+            --badge-gold: #ffd700;
+            --badge-text: #1a1a2e;
+            --link-color: #8b9cee;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: var(--bg-primary); min-height: 100vh; }
+
+        /* Navigation */
+        .navbar { background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar h1 { color: white; font-size: 24px; }
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .nav-links a { color: white; text-decoration: none; padding: 8px 16px; border-radius: 20px; }
+        .nav-links a:hover { background: rgba(255,255,255,0.2); }
+        .points-badge { background: var(--badge-gold); color: var(--badge-text); padding: 5px 15px; border-radius: 20px; font-weight: bold; }
+
+        /* Container */
+        .container { max-width: 900px; margin: 0 auto; padding: 30px; }
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; color: var(--link-color); text-decoration: none; margin-bottom: 20px; font-weight: 500; }
+
+        /* Course Header */
+        .course-header { background: var(--card-bg); border-radius: 15px; padding: 30px; margin-bottom: 30px; box-shadow: 0 5px 15px var(--shadow-color); }
+        .course-header h1 { color: var(--text-primary); margin-bottom: 10px; font-size: 28px; }
+        .course-header p { color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6; }
+        .course-stats { display: flex; gap: 30px; flex-wrap: wrap; }
+        .stat { display: flex; align-items: center; gap: 8px; }
+        .stat-icon { font-size: 20px; }
+        .stat-text { color: var(--text-secondary); }
+
+        /* Progress Section */
+        .progress-section { background: var(--card-bg); border-radius: 15px; padding: 20px 30px; margin-bottom: 30px; box-shadow: 0 5px 15px var(--shadow-color); }
+        .progress-header { display: flex; justify-content: space-between; margin-bottom: 10px; color: var(--text-primary); }
+        .progress-bar { height: 10px; background: var(--border-color); border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%); border-radius: 10px; transition: width 0.5s ease; }
+
+        /* Activities Section */
+        .activities-section h2 { color: var(--text-primary); margin-bottom: 20px; }
+        .activity-card { background: var(--card-bg); border-radius: 15px; padding: 20px 25px; margin-bottom: 15px; box-shadow: 0 5px 15px var(--shadow-color); cursor: pointer; transition: transform 0.3s; }
+        .activity-card:hover { transform: translateX(5px); }
+        .activity-header { display: flex; justify-content: space-between; align-items: center; }
+        .activity-info h3 { color: var(--text-primary); margin-bottom: 5px; }
+        .activity-info p { color: var(--text-secondary); font-size: 14px; }
+        .activity-meta { display: flex; gap: 15px; margin-top: 8px; }
+        .activity-meta span { font-size: 13px; color: var(--text-muted); }
+        .activity-action { display: flex; align-items: center; gap: 15px; }
+        .activity-points { color: #667eea; font-weight: bold; }
+        .status-badge { padding: 5px 15px; border-radius: 15px; font-size: 13px; font-weight: 600; }
+        .status-badge.completed { background: #e6ffe6; color: #00aa00; }
+        .status-badge.start { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay-bg); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: var(--modal-bg); border-radius: 20px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%); color: white; padding: 25px 30px; border-radius: 20px 20px 0 0; }
+        .modal-header h2 { margin-bottom: 5px; font-size: 24px; }
+        .modal-header p { opacity: 0.9; font-size: 14px; }
+
+        /* Video Player Styles */
+        .video-container { width: 100%; background: #000; border-radius: 0; overflow: hidden; }
+        .video-container iframe { width: 100%; height: 450px; border: none; display: block; }
+
+        /* Content Styles */
+        .modal-body { padding: 30px; background: var(--modal-bg); }
+        .content-section { margin-bottom: 25px; }
+        .content-section h3 { color: #667eea; margin-bottom: 15px; font-size: 18px; }
+        .content-section p { color: var(--text-secondary); line-height: 1.8; margin-bottom: 10px; }
+        .content-section ul { margin-left: 20px; color: var(--text-secondary); line-height: 2; }
+        .content-section li { margin-bottom: 8px; }
+
+        /* Description Box */
+        .activity-description { background: var(--timer-bg); padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid #667eea; }
+        .activity-description p { font-size: 16px; color: var(--text-secondary); line-height: 1.6; margin: 0; }
+
+        /* Timer Styles */
+        .timer-section { background: var(--timer-bg); border-radius: 15px; padding: 25px; text-align: center; margin: 25px 0; }
+        .timer-section h3 { color: var(--text-primary); }
+        .timer-section p { color: var(--text-secondary); }
+        .timer-display { font-size: 48px; font-weight: bold; color: var(--timer-text); margin: 15px 0; }
+        .timer-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 16px; cursor: pointer; margin: 5px; }
+        .timer-btn:hover { opacity: 0.9; }
+        .timer-btn.pause { background: #ff8800; }
+        .timer-btn.reset { background: #888; }
+
+        /* Footer Styles */
+        .modal-footer { padding: 20px 30px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--modal-bg); }
+        .close-btn { background: var(--close-btn-bg); color: var(--close-btn-text); border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-size: 14px; }
+        .complete-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 30px; border-radius: 25px; cursor: pointer; font-weight: 600; font-size: 14px; }
+        .complete-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* Message Styles */
+        .message { position: fixed; top: 80px; right: 20px; padding: 15px 25px; border-radius: 10px; color: white; font-weight: 500; display: none; z-index: 1001; }
+        .message.success { background: #00aa00; display: block; }
+        .message.error { background: #cc0000; display: block; }
+        .loading { text-align: center; padding: 50px; color: var(--text-secondary); }
+
+        /* Dark Mode Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            min-width: 60px;
+            min-height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            z-index: 9999;
+            margin: 0;
+            padding: 0;
+            transform: translate(0, 0);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        /* Sound Toggle Button */
+        .sound-toggle {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            z-index: 9999;
+            transition: transform 0.3s;
+        }
+
+        .sound-toggle:hover {
+            transform: scale(1.1);
+        }
+
+    </style>
+    <!-- Animation System -->
+    <link rel="stylesheet" href="animations.css">
+</head>
+<body>
+<nav class="navbar">
+    <h1>🧘 ZenApp</h1>
+    <div class="nav-links">
+        <a href="/home.html">Home</a>
+        <a href="/profile.html">Profile</a>
+        <a href="/settings.html">Settings</a>
+        <span class="points-badge" id="userPoints">0 pts</span>
+    </div>
+</nav>
+<div id="message" class="message"></div>
+<div class="container">
+    <a href="/home.html" class="back-btn">← Back to Courses</a>
+    <div class="course-header" id="courseHeader"><div class="loading">Loading course...</div></div>
+    <div class="progress-section">
+        <div class="progress-header"><span>Your Progress</span><span id="progressPercent">0%</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%"></div></div>
+        <button onclick="resetCourse()" style="margin-top: 15px; background: #ff6b6b; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 600;">
+            🔄 Reset Course Progress
+        </button>
+    </div>
+    <div class="activities-section">
+        <h2>Activities</h2>
+        <div id="activitiesList"><div class="loading">Loading activities...</div></div>
+    </div>
+</div>
+<div class="modal-overlay" id="activityModal">
+    <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h2 id="modalTitle">Activity</h2>
+            <p id="modalSubtitle">Follow along with the guide</p>
+        </div>
+        <div id="videoSection"></div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer">
+            <button class="close-btn" id="closeBtn">Close</button>
+            <button class="complete-btn" id="modalCompleteBtn">Complete Activity (+<span id="modalPoints">0</span> pts)</button>
+        </div>
+    </div>
+</div>
+<script>
+    /* ========================================
+       SOUND SYSTEM
+       ======================================== */
+
+    // Sound Manager
+    const SoundManager = {
+        sounds: {},
+        enabled: true,
+
+        init() {
+            // Check if sounds are enabled in localStorage
+            const savedSoundState = localStorage.getItem('soundEnabled');
+            this.enabled = savedSoundState === null || savedSoundState === 'true';
+            this.updateSoundButton();
+
+            // Preload all sounds
+            this.sounds.startup = new Audio('sounds/Start_sound.mp3');
+            this.sounds.hover = new Audio('sounds/Button_hover_sound.mp3');
+            this.sounds.success = new Audio('sounds/Success_sound.mp3');
+
+            // Set volume levels
+            this.sounds.startup.volume = 0.5;
+            this.sounds.hover.volume = 0.3;
+            this.sounds.success.volume = 0.6;
+
+            // Startup sound disabled - only plays on login page
+            // if (this.enabled) {
+            //     setTimeout(() => this.play('startup'), 300);
+            // }
+
+            // Add hover sound to all buttons
+            this.addHoverSounds();
+        },
+
+        play(soundName) {
+            if (!this.enabled) return;
+
+            const sound = this.sounds[soundName];
+            if (sound) {
+                sound.currentTime = 0; // Reset to start
+                sound.play().catch(err => console.log('Sound play failed:', err));
+            }
+        },
+
+        addHoverSounds() {
+            // Wait for DOM to be fully loaded before adding listeners
+            setTimeout(() => {
+                // Select all interactive elements
+                const selectors = [
+                    'button',
+                    '.btn',
+                    '.tab',
+                    '.course-card',
+                    '.activity-card',
+                    '.badge-card',
+                    '.nav-links a',
+                    '.logout-btn',
+                    '.admin-link',
+                    '.edit-btn',
+                    '.delete-btn',
+                    '.complete-btn',
+                    '.status-badge',
+                    'a[href]'
+                ].join(', ');
+
+                const elements = document.querySelectorAll(selectors);
+                console.log(`🔊 Sound: Adding hover to ${elements.length} elements`);
+
+                elements.forEach((element, index) => {
+                    element.addEventListener('mouseenter', () => {
+                        if (this.enabled) {
+                            this.play('hover');
+                        }
+                    });
+                });
+            }, 500); // Wait 500ms for DOM elements to load
+        },
+
+        toggle() {
+            this.enabled = !this.enabled;
+            localStorage.setItem('soundEnabled', this.enabled);
+            this.updateSoundButton();
+        },
+
+        updateSoundButton() {
+            const btn = document.getElementById('soundToggle');
+            if (btn) {
+                btn.textContent = this.enabled ? '🔊' : '🔇';
+            }
+        }
+    };
+
+    // Initialize sound system when page loads
+    window.addEventListener('load', () => {
+        SoundManager.init();
+    });
+
+    // Toggle sound on/off
+    function toggleSound() {
+        SoundManager.toggle();
+    }
+
+    /* ========================================
+       END SOUND SYSTEM
+       ======================================== */
+
+
+    /* Dark Mode Toggle Functions */
+
+    // Function to apply dark mode
+    function applyDarkMode() {
+        document.body.classList.add('dark-mode');
+        const toggleBtn = document.getElementById('themeToggle');
+        if (toggleBtn) {
+            toggleBtn.textContent = '☀️'; // Sun icon for light mode
+        }
+    }
+
+    // Function to remove dark mode
+    function removeDarkMode() {
+        document.body.classList.remove('dark-mode');
+        const toggleBtn = document.getElementById('themeToggle');
+        if (toggleBtn) {
+            toggleBtn.textContent = '🌙'; // Moon icon for dark mode
+        }
+    }
+
+    // Function to toggle dark mode
+    function toggleDarkMode() {
+        const isDarkMode = document.body.classList.contains('dark-mode');
+
+        if (isDarkMode) {
+            // Switch to light mode
+            removeDarkMode();
+            localStorage.setItem('darkMode', 'false');
+        } else {
+            // Switch to dark mode
+            applyDarkMode();
+            localStorage.setItem('darkMode', 'true');
+        }
+    }
+
+    // Function to initialize dark mode on page load
+    function initializeDarkMode() {
+        const savedMode = localStorage.getItem('darkMode');
+
+        if (savedMode === 'true') {
+            applyDarkMode();
+        } else {
+            removeDarkMode();
+        }
+    }
+
+    // Initialize dark mode when page loads
+    initializeDarkMode();
+
+    const userId = localStorage.getItem('userId');
+    if (!userId) window.location.href = '/login.html';
+    const urlParams = new URLSearchParams(window.location.search);
+    const courseId = urlParams.get('id');
+    if (!courseId) window.location.href = '/home.html';
+
+    let currentActivityId = null;
+    let currentActivityPoints = 0;
+    let timerInterval = null;
+    let timerSeconds = 0;
+    let timerRunning = false;
+
+    function showMessage(text, type) {
+        const msg = document.getElementById('message');
+        msg.textContent = text;
+        msg.className = 'message ' + type;
+        setTimeout(() => msg.className = 'message', 3000);
+    }
+
+    async function loadUserPoints() {
+        try {
+            const response = await fetch(`/api/users/${userId}/points`);
+            const data = await response.json();
+            document.getElementById('userPoints').textContent = data.totalPoints + ' pts';
+        } catch (error) { console.error('Error:', error); }
+    }
+
+    async function loadCourse() {
+        try {
+            const response = await fetch(`/api/courses/${courseId}`);
+            const course = await response.json();
+            document.getElementById('courseHeader').innerHTML = `<h1>${course.courseName}</h1><p>${course.description || ''}</p><div class="course-stats"><div class="stat"><span class="stat-icon">📊</span><span class="stat-text">${course.difficultyLevel}</span></div><div class="stat"><span class="stat-icon">⏱️</span><span class="stat-text">${course.estimatedDuration || 30} min</span></div><div class="stat"><span class="stat-icon">⭐</span><span class="stat-text">${course.pointsReward} points</span></div></div>`;
+            document.title = `${course.courseName} - Mindfulness App`;
+        } catch (error) { console.error('Error:', error); }
+    }
+
+    async function loadActivities() {
+        try {
+            const response = await fetch(`/api/courses/${courseId}/activities`);
+            const activities = await response.json();
+            const list = document.getElementById('activitiesList');
+            list.innerHTML = '';
+            for (const activity of activities) {
+                const checkResponse = await fetch(`/api/activities/check/${userId}/${activity.activityId}`);
+                const checkData = await checkResponse.json();
+                const isCompleted = checkData.completed;
+                const card = document.createElement('div');
+                card.className = 'activity-card';
+                card.setAttribute('data-activity-id', activity.activityId);
+                card.setAttribute('data-completed', isCompleted);
+                card.innerHTML = `<div class="activity-header"><div class="activity-info"><h3>${activity.activityName}</h3><p>${activity.description || 'Complete this activity to earn points.'}</p><div class="activity-meta"><span>⏱️ ${activity.duration || 10} min</span><span>📝 ${activity.activityType || 'Practice'}</span></div></div><div class="activity-action"><span class="activity-points">+${activity.pointsReward} pts</span><span class="status-badge ${isCompleted ? 'completed' : 'start'}">${isCompleted ? '✓ Completed' : 'Start →'}</span></div></div>`;
+                card.onclick = () => openModal(activity, isCompleted);
+                list.appendChild(card);
+            }
+            loadProgress();
+        } catch (error) { console.error('Error:', error); }
+    }
+
+    async function loadProgress() {
+        try {
+            const response = await fetch(`/api/activities/progress/${userId}/${courseId}`);
+            const data = await response.json();
+            const percent = Math.round(data.progressPercent);
+            document.getElementById('progressPercent').textContent = percent + '%';
+            document.getElementById('progressFill').style.width = percent + '%';
+        } catch (error) { console.error('Error:', error); }
+    }
+
+    function openModal(activity, isCompleted) {
+        currentActivityId = activity.activityId;
+        currentActivityPoints = activity.pointsReward;
+
+        // Parse content JSON
+        let content = null;
+        try {
+            content = activity.content ? JSON.parse(activity.content) : null;
+        } catch (e) {
+            console.error('Error parsing content:', e);
+        }
+
+        // Set header
+        const modalTitle = document.getElementById('modalTitle');
+        const modalSubtitle = document.getElementById('modalSubtitle');
+        const modalPoints = document.getElementById('modalPoints');
+
+        if (modalTitle) modalTitle.textContent = activity.activityName;
+        if (modalSubtitle) modalSubtitle.textContent = activity.description || 'Follow the instructions below';
+        if (modalPoints) modalPoints.textContent = activity.pointsReward;
+
+        // Add video if available
+        const videoSection = document.getElementById('videoSection');
+        if (activity.mediaType === 'video' && activity.mediaUrl) {
+            videoSection.innerHTML = `
+                <div class="video-container">
+                    <iframe src="${activity.mediaUrl}"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                    </iframe>
+                </div>
+            `;
+        } else {
+            videoSection.innerHTML = '';
+        }
+
+        // Build body content
+        let bodyHTML = '';
+
+        // Add description box if available
+        if (content && content.description) {
+            bodyHTML += `
+                <div class="activity-description">
+                    <p>${content.description}</p>
+                </div>
+            `;
+        }
+
+        // Add sections from content
+        if (content && content.sections && Array.isArray(content.sections)) {
+            content.sections.forEach(section => {
+                bodyHTML += `<div class="content-section">`;
+                if (section.title) {
+                    bodyHTML += `<h3>${section.title}</h3>`;
+                }
+                if (section.content) {
+                    bodyHTML += `<p>${section.content}</p>`;
+                }
+                if (section.list && Array.isArray(section.list)) {
+                    bodyHTML += '<ul>';
+                    section.list.forEach(item => {
+                        bodyHTML += `<li>${item}</li>`;
+                    });
+                    bodyHTML += '</ul>';
+                }
+                bodyHTML += `</div>`;
+            });
+        }
+
+        // Add timer
+        const timerMinutes = (content && content.timerMinutes) ? content.timerMinutes : (activity.duration || 10);
+        bodyHTML += `
+            <div class="timer-section">
+                <h3>⏱️ Practice Timer</h3>
+                <p>Use this timer for your practice session</p>
+                <div class="timer-display" id="timerDisplay">${timerMinutes}:00</div>
+                <div>
+                    <button class="timer-btn" id="startTimerBtn">Start Timer</button>
+                    <button class="timer-btn pause" id="pauseTimerBtn" style="display:none">Pause</button>
+                    <button class="timer-btn reset" id="resetTimerBtn">Reset</button>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('modalBody').innerHTML = bodyHTML;
+
+        // Set up timer button events
+        setTimeout(() => {
+            const startBtn = document.getElementById('startTimerBtn');
+            const pauseBtn = document.getElementById('pauseTimerBtn');
+            const resetBtn = document.getElementById('resetTimerBtn');
+
+            if (startBtn) startBtn.onclick = () => startTimer(timerMinutes);
+            if (pauseBtn) pauseBtn.onclick = pauseTimer;
+            if (resetBtn) resetBtn.onclick = () => resetTimer(timerMinutes);
+        }, 10);
+
+        // Set complete button state
+        const completeBtn = document.getElementById('modalCompleteBtn');
+
+        // Remove ALL existing undo buttons (cleanup any duplicates)
+        // Look for any button in modal-footer that has the red background color
+        const modalFooter = document.querySelector('.modal-footer');
+        const existingUndoButtons = modalFooter.querySelectorAll('button.complete-btn');
+        existingUndoButtons.forEach(btn => {
+            // Remove if it's an undo button (has red background or specific text)
+            if (btn.textContent.includes('Mark as Incomplete') || btn.style.background.includes('ff6b6b')) {
+                btn.remove();
+            }
+        });
+
+        if (isCompleted) {
+            completeBtn.textContent = '✓ Already Completed';
+            completeBtn.disabled = true;
+            completeBtn.style.background = '#00aa00';
+            completeBtn.onclick = null;
+
+            // Add Undo button
+            const undoBtn = document.createElement('button');
+            undoBtn.className = 'complete-btn';
+            undoBtn.textContent = '↩ Mark as Incomplete';
+            undoBtn.style.background = '#ff6b6b';
+            undoBtn.style.marginLeft = '10px';
+            undoBtn.onclick = () => uncompleteActivity(activity.activityId, activity.pointsReward);
+
+            document.querySelector('.modal-footer').appendChild(undoBtn);
+        } else {
+            completeBtn.innerHTML = `Complete Activity (+${activity.pointsReward} pts)`;
+            completeBtn.disabled = false;
+            completeBtn.style.background = '';
+            completeBtn.onclick = completeActivity;
+        }
+
+        document.getElementById('activityModal').classList.add('active');
+    }
+
+    function closeModalFn() {
+        document.getElementById('activityModal').classList.remove('active');
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+        timerRunning = false;
+        timerSeconds = 0;
+        currentActivityId = null;
+
+        // Clean up any undo buttons when closing modal
+        const undoButtons = document.querySelectorAll('.modal-footer button.complete-btn[style*="ff6b6b"]');
+        undoButtons.forEach(btn => btn.remove());
+    }
+
+    function startTimer(minutes) {
+        if (timerRunning) return;
+        if (timerSeconds === 0) timerSeconds = minutes * 60;
+        timerRunning = true;
+        document.getElementById('startTimerBtn').style.display = 'none';
+        document.getElementById('pauseTimerBtn').style.display = 'inline-block';
+        timerInterval = setInterval(() => {
+            timerSeconds--;
+            const mins = Math.floor(timerSeconds / 60);
+            const secs = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            if (timerSeconds <= 0) {
+                clearInterval(timerInterval); timerInterval = null; timerRunning = false;
+                document.getElementById('timerDisplay').textContent = "✓ Complete!";
+                document.getElementById('pauseTimerBtn').style.display = 'none';
+            }
+        }, 1000);
+    }
+
+    function pauseTimer() {
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+        timerRunning = false;
+        document.getElementById('startTimerBtn').style.display = 'inline-block';
+        document.getElementById('startTimerBtn').textContent = 'Resume';
+        document.getElementById('pauseTimerBtn').style.display = 'none';
+    }
+
+    function resetTimer(minutes) {
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+        timerRunning = false;
+        timerSeconds = 0;
+        document.getElementById('timerDisplay').textContent = `${minutes}:00`;
+        document.getElementById('startTimerBtn').style.display = 'inline-block';
+        document.getElementById('startTimerBtn').textContent = 'Start Timer';
+        document.getElementById('pauseTimerBtn').style.display = 'none';
+    }
+
+    async function completeActivity() {
+        if (!currentActivityId) return;
+        try {
+            const response = await fetch('/api/activities/complete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: parseInt(userId), activityId: currentActivityId })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                SoundManager.play('success');
+                showMessage(`🎉 +${data.pointsEarned} points earned!`, 'success');
+                AnimationSystem.showPointsAnimation(data.pointsEarned, window.innerWidth / 2, window.innerHeight / 2);
+                closeModalFn();
+                loadUserPoints();
+                loadActivities();
+            } else { showMessage(data.error || 'Error', 'error'); }
+        } catch (error) { showMessage('Connection error', 'error'); }
+    }
+
+    async function uncompleteActivity(activityId, points) {
+        if (!confirm('Are you sure you want to mark this as incomplete? You will lose ' + points + ' points!')) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/activities/uncomplete', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: parseInt(userId),
+                    activityId: activityId
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showMessage('Activity marked as incomplete! -' + points + ' points', 'success');
+                closeModalFn();
+                loadUserPoints();
+                loadActivities();
+            } else {
+                showMessage(data.error || 'Error', 'error');
+            }
+        } catch (error) {
+            showMessage('Connection error', 'error');
+        }
+    }
+
+    async function resetCourse() {
+        if (!confirm('⚠️ Are you sure you want to reset ALL progress in this course? This will:\n\n- Remove all completed activities\n- Take back all points earned\n- Remove related badges\n\nThis cannot be undone!')) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/activities/reset-course', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: parseInt(userId),
+                    courseId: parseInt(courseId)
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showMessage('✅ Course progress reset successfully!', 'success');
+                loadUserPoints();
+                loadActivities();
+            } else {
+                showMessage(data.error || 'Error resetting course', 'error');
+            }
+        } catch (error) {
+            showMessage('Connection error', 'error');
+        }
+    }
+
+    document.getElementById('activityModal').addEventListener('click', (e) => {
+        if (e.target.id === 'activityModal') closeModalFn();
+    });
+
+    document.getElementById('closeBtn').addEventListener('click', closeModalFn);
+
+    loadUserPoints();
+    loadCourse();
+    loadActivities();
+</script>
+
+<!-- Dark Mode Toggle Button -->
+<button class="theme-toggle" id="themeToggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+    🌙
+</button>
+
+
+<!-- Sound Toggle -->
+<button class="sound-toggle" id="soundToggle" onclick="toggleSound()" title="Toggle Sound">
+    🔊
+</button>
+
+<!-- Animation System -->
+<script src="animations.js"></script>
+</body>
+</html>
